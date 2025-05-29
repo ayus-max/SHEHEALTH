@@ -145,6 +145,8 @@
             transition: transform 0.3s, box-shadow 0.3s;
             font-weight: 600;
             box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
+            text-decoration: none;
+            display: inline-block;
         }
         
         .cta-button:hover {
@@ -244,6 +246,9 @@
             border-radius: 50%;
             cursor: pointer;
             font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .calendar-grid {
@@ -267,6 +272,7 @@
             border-radius: 50%;
             cursor: pointer;
             transition: background 0.3s;
+            position: relative;
         }
         
         .calendar-day:hover {
@@ -289,6 +295,7 @@
         
         .today {
             border: 2px solid var(--accent);
+            font-weight: bold;
         }
         
         .stats {
@@ -468,6 +475,90 @@
             color: var(--secondary);
         }
         
+        /* Day details popup */
+        .day-details {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1000;
+            max-width: 400px;
+            width: 90%;
+            display: none;
+        }
+        
+        .day-details.active {
+            display: block;
+        }
+        
+        .day-details h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--dark);
+            text-align: center;
+        }
+        
+        .day-info {
+            margin-bottom: 20px;
+        }
+        
+        .day-info p {
+            margin: 10px 0;
+        }
+        
+        .day-info .tag {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+        
+        .tag-period {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .tag-fertile {
+            background: var(--secondary);
+        }
+        
+        .tag-predicted {
+            background: rgba(156, 39, 176, 0.1);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+        
+        .close-details {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--dark);
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
         /* Responsive design */
         @media (max-width: 768px) {
             .hero h2 {
@@ -495,6 +586,16 @@
     </style>
 </head>
 <body>
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="day-details" id="dayDetails">
+        <button class="close-details" id="closeDetails"><i class="fas fa-times"></i></button>
+        <h3>Day Details</h3>
+        <div class="day-info" id="dayInfo">
+            <!-- Details will be populated by JavaScript -->
+        </div>
+    </div>
+    
     <header>
         <div class="container">
             <div class="header-content">
@@ -513,7 +614,7 @@
         <section class="hero">
             <h2>World's Best Period Tracker</h2>
             <p>CycleSync helps you understand your menstrual cycle, predict your period, track ovulation, and monitor symptoms - all in one beautiful, intuitive app. Take control of your reproductive health with our advanced algorithm.</p>
-            <button class="cta-button">Start Tracking Today</button>
+            <a href="#tracker-section" class="cta-button">Start Tracking Today</a>
         </section>
         
         <section class="features">
@@ -534,81 +635,37 @@
             </div>
         </section>
         
-        <section class="tracker-section">
+        <section class="tracker-section" id="tracker-section">
             <h2 class="section-title">Period Tracker</h2>
             <div class="tracker-container">
                 <div class="calendar">
                     <div class="calendar-header">
-                        <button><i class="fas fa-chevron-left"></i></button>
-                        <h3>June 2023</h3>
-                        <button><i class="fas fa-chevron-right"></i></button>
+                        <button id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                        <h3 id="currentMonth">June 2023</h3>
+                        <button id="nextMonth"><i class="fas fa-chevron-right"></i></button>
                     </div>
-                    <div class="calendar-grid">
-                        <div class="day-name">Sun</div>
-                        <div class="day-name">Mon</div>
-                        <div class="day-name">Tue</div>
-                        <div class="day-name">Wed</div>
-                        <div class="day-name">Thu</div>
-                        <div class="day-name">Fri</div>
-                        <div class="day-name">Sat</div>
-                        
-                        <!-- Calendar days -->
-                        <div class="calendar-day">28</div>
-                        <div class="calendar-day">29</div>
-                        <div class="calendar-day">30</div>
-                        <div class="calendar-day">31</div>
-                        <div class="calendar-day">1</div>
-                        <div class="calendar-day">2</div>
-                        <div class="calendar-day">3</div>
-                        <div class="calendar-day">4</div>
-                        <div class="calendar-day period-day">5</div>
-                        <div class="calendar-day period-day">6</div>
-                        <div class="calendar-day period-day">7</div>
-                        <div class="calendar-day period-day">8</div>
-                        <div class="calendar-day period-day">9</div>
-                        <div class="calendar-day">10</div>
-                        <div class="calendar-day">11</div>
-                        <div class="calendar-day fertile-day">12</div>
-                        <div class="calendar-day fertile-day">13</div>
-                        <div class="calendar-day fertile-day">14</div>
-                        <div class="calendar-day fertile-day">15</div>
-                        <div class="calendar-day fertile-day">16</div>
-                        <div class="calendar-day">17</div>
-                        <div class="calendar-day">18</div>
-                        <div class="calendar-day">19</div>
-                        <div class="calendar-day">20</div>
-                        <div class="calendar-day">21</div>
-                        <div class="calendar-day">22</div>
-                        <div class="calendar-day">23</div>
-                        <div class="calendar-day">24</div>
-                        <div class="calendar-day predicted-day">25</div>
-                        <div class="calendar-day predicted-day">26</div>
-                        <div class="calendar-day predicted-day">27</div>
-                        <div class="calendar-day predicted-day">28</div>
-                        <div class="calendar-day predicted-day">29</div>
-                        <div class="calendar-day">30</div>
-                        <div class="calendar-day today">1</div>
-                        <div class="calendar-day">2</div>
+                    <div class="calendar-grid" id="calendarGrid">
+                        <!-- Calendar days will be populated by JavaScript -->
                     </div>
                 </div>
                 
                 <div class="stats">
                     <div class="stats-card">
                         <h3><i class="fas fa-moon"></i> Current Cycle Day</h3>
-                        <div class="stats-value">Day 14</div>
-                        <p>You're in the follicular phase of your cycle</p>
+                        <div class="stats-value" id="cycleDay">Day 14</div>
+                        <p id="cyclePhase">You're in the follicular phase of your cycle</p>
                     </div>
                     
                     <div class="stats-card">
                         <h3><i class="fas fa-venus"></i> Fertility Window</h3>
-                        <div class="stats-value">June 12-16</div>
-                        <p>High chance of conception during this window</p>
+                        <div class="stats-value" id="fertilityWindow">June 12-16</div>
+                        <p id="fertilityInfo">High chance of conception during this window</p>
                     </div>
                     
                     <div class="stats-card">
                         <h3><i class="fas fa-calendar-check"></i> Next Period</h3>
-                        <div class="stats-value">June 25</div>
-                        <p>Predicted start in 11 days</p>
+                        <div class="stats-value" id="nextPeriod">June 25</div>
+                        <p id="periodInfo">Predicted start in 11 days</p>
                     </div>
                 </div>
             </div>
@@ -622,29 +679,29 @@
                 <div class="visitor-card">
                     <i class="fas fa-users"></i>
                     <h3>Total Visitors</h3>
-                    <div class="count">1,248</div>
+                    <div class="count" id="visitorCount">1,248</div>
                     <p>People visited this site</p>
                 </div>
                 
                 <div class="visitor-card">
                     <i class="fas fa-envelope"></i>
                     <h3>Emails Collected</h3>
-                    <div class="count">427</div>
+                    <div class="count" id="emailCount">427</div>
                     <p>Subscribers to your service</p>
                 </div>
                 
                 <div class="visitor-card">
                     <i class="fas fa-globe-americas"></i>
                     <h3>Countries</h3>
-                    <div class="count">36</div>
+                    <div class="count" id="countryCount">36</div>
                     <p>Global reach</p>
                 </div>
                 
                 <div class="visitor-card">
                     <i class="fas fa-mobile-alt"></i>
                     <h3>Device Usage</h3>
-                    <div class="count">72% Mobile</div>
-                    <p>28% Desktop</p>
+                    <div class="count" id="deviceUsage">72% Mobile</div>
+                    <p id="desktopUsage">28% Desktop</p>
                 </div>
             </div>
         </section>
@@ -654,9 +711,10 @@
             <p>Enter your email below to receive our period tracking guide and get notified when we launch our mobile app. We'll also add you to our exclusive community!</p>
             
             <div class="form-group">
-                <input type="email" placeholder="Enter your email address">
-                <button>Subscribe</button>
+                <input type="email" id="userEmail" placeholder="Enter your email address">
+                <button id="subscribeBtn">Subscribe</button>
             </div>
+            <p id="subscriptionMessage" style="margin-top: 15px; display: none;"></p>
         </section>
     </div>
     
@@ -698,59 +756,247 @@
     </footer>
     
     <script>
-        // Demo functionality for the period tracker
+        // Initialize the tracker
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the calendar
+            initCalendar();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Initialize analytics
+            initAnalytics();
+        });
+        
+        function initCalendar() {
             // Set today's date
             const today = new Date();
-            document.querySelector('.today').textContent = today.getDate();
+            let currentMonth = today.getMonth();
+            let currentYear = today.getFullYear();
             
-            // Handle calendar navigation
-            const prevBtn = document.querySelector('.calendar-header button:first-child');
-            const nextBtn = document.querySelector('.calendar-header button:last-child');
-            const monthTitle = document.querySelector('.calendar-header h3');
+            // Render the calendar
+            renderCalendar(currentMonth, currentYear);
             
-            const months = ["January", "February", "March", "April", "May", "June", 
-                           "July", "August", "September", "October", "November", "December"];
+            // Update stats
+            updateStats();
+        }
+        
+        function renderCalendar(month, year) {
+            const calendarGrid = document.getElementById('calendarGrid');
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                               "July", "August", "September", "October", "November", "December"];
             
-            let currentMonth = 5; // June (0-indexed)
+            // Set the month title
+            document.getElementById('currentMonth').textContent = `${monthNames[month]} ${year}`;
             
-            prevBtn.addEventListener('click', function() {
-                currentMonth = (currentMonth - 1 + 12) % 12;
-                monthTitle.textContent = months[currentMonth] + " 2023";
+            // Clear previous calendar
+            calendarGrid.innerHTML = '';
+            
+            // Create day names
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayNames.forEach(day => {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'day-name';
+                dayElement.textContent = day;
+                calendarGrid.appendChild(dayElement);
             });
             
-            nextBtn.addEventListener('click', function() {
-                currentMonth = (currentMonth + 1) % 12;
-                monthTitle.textContent = months[currentMonth] + " 2023";
+            // Get first day of month
+            const firstDay = new Date(year, month, 1);
+            const firstDayIndex = firstDay.getDay();
+            
+            // Get last day of month
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            
+            // Get days in previous month
+            const prevLastDay = new Date(year, month, 0).getDate();
+            
+            // Add previous month's days
+            for (let i = firstDayIndex; i > 0; i--) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = prevLastDay - i + 1;
+                dayElement.classList.add('prev-month');
+                dayElement.style.opacity = '0.5';
+                calendarGrid.appendChild(dayElement);
+            }
+            
+            // Add current month's days
+            const today = new Date();
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                dayElement.textContent = i;
+                
+                // Mark today
+                if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                    dayElement.classList.add('today');
+                }
+                
+                // Demo data - period days (days 1-5)
+                if (i >= 1 && i <= 5) {
+                    dayElement.classList.add('period-day');
+                }
+                
+                // Demo data - fertile days (days 12-16)
+                if (i >= 12 && i <= 16) {
+                    dayElement.classList.add('fertile-day');
+                }
+                
+                // Demo data - predicted period (days 25-29)
+                if (i >= 25 && i <= 29) {
+                    dayElement.classList.add('predicted-day');
+                }
+                
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+        
+        function updateStats() {
+            const today = new Date();
+            const cycleDay = (today.getDate() > 14) ? today.getDate() - 14 : today.getDate() + 16;
+            document.getElementById('cycleDay').textContent = `Day ${cycleDay}`;
+            
+            // Update fertility window
+            const nextPeriod = new Date(today);
+            nextPeriod.setDate(today.getDate() + 11);
+            const options = { month: 'long', day: 'numeric' };
+            document.getElementById('nextPeriod').textContent = nextPeriod.toLocaleDateString('en-US', options);
+            
+            // Calculate fertility window (5 days before ovulation)
+            const fertilityStart = new Date(nextPeriod);
+            fertilityStart.setDate(nextPeriod.getDate() - 19);
+            const fertilityEnd = new Date(fertilityStart);
+            fertilityEnd.setDate(fertilityStart.getDate() + 5);
+            
+            document.getElementById('fertilityWindow').textContent = 
+                `${fertilityStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - 
+                 ${fertilityEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+        }
+        
+        function setupEventListeners() {
+            // Month navigation
+            document.getElementById('prevMonth').addEventListener('click', function() {
+                const monthTitle = document.getElementById('currentMonth').textContent;
+                const [monthName, year] = monthTitle.split(' ');
+                const monthIndex = new Date(Date.parse(`${monthName} 1, ${year}`)).getMonth();
+                let newYear = parseInt(year);
+                let newMonth = monthIndex - 1;
+                
+                if (newMonth < 0) {
+                    newMonth = 11;
+                    newYear--;
+                }
+                
+                renderCalendar(newMonth, newYear);
             });
             
-            // Email form submission
-            const emailForm = document.querySelector('.form-group');
-            emailForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const emailInput = emailForm.querySelector('input');
-                if (emailInput.value && validateEmail(emailInput.value)) {
-                    alert('Thank you for subscribing! We will send you our period tracking guide shortly.');
-                    emailInput.value = '';
-                } else {
-                    alert('Please enter a valid email address.');
+            document.getElementById('nextMonth').addEventListener('click', function() {
+                const monthTitle = document.getElementById('currentMonth').textContent;
+                const [monthName, year] = monthTitle.split(' ');
+                const monthIndex = new Date(Date.parse(`${monthName} 1, ${year}`)).getMonth();
+                let newYear = parseInt(year);
+                let newMonth = monthIndex + 1;
+                
+                if (newMonth > 11) {
+                    newMonth = 0;
+                    newYear++;
+                }
+                
+                renderCalendar(newMonth, newYear);
+            });
+            
+            // Day click event
+            document.getElementById('calendarGrid').addEventListener('click', function(e) {
+                if (e.target.classList.contains('calendar-day')) {
+                    const day = e.target.textContent;
+                    const monthTitle = document.getElementById('currentMonth').textContent;
+                    
+                    // Create day details
+                    const details = document.getElementById('dayInfo');
+                    details.innerHTML = `
+                        <p><strong>Date:</strong> ${monthTitle.split(' ')[0]} ${day}, ${monthTitle.split(' ')[1]}</p>
+                        <p><strong>Status:</strong> 
+                            ${e.target.classList.contains('period-day') ? '<span class="tag tag-period">Period Day</span>' : ''}
+                            ${e.target.classList.contains('fertile-day') ? '<span class="tag tag-fertile">Fertile Day</span>' : ''}
+                            ${e.target.classList.contains('predicted-day') ? '<span class="tag tag-predicted">Predicted Period</span>' : ''}
+                            ${e.target.classList.contains('today') ? '<span class="tag">Today</span>' : ''}
+                        </p>
+                        <p><strong>Notes:</strong></p>
+                        <textarea placeholder="Add notes about this day..." style="width: 100%; height: 100px; padding: 10px; border-radius: 10px; border: 1px solid #ddd; margin-top: 10px;"></textarea>
+                        <button style="margin-top: 15px; padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 20px; cursor: pointer;">Save Notes</button>
+                    `;
+                    
+                    // Show day details
+                    document.getElementById('dayDetails').classList.add('active');
+                    document.getElementById('overlay').classList.add('active');
                 }
             });
             
-            function validateEmail(email) {
-                const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                return re.test(email);
-            }
+            // Close day details
+            document.getElementById('closeDetails').addEventListener('click', function() {
+                document.getElementById('dayDetails').classList.remove('active');
+                document.getElementById('overlay').classList.remove('active');
+            });
             
+            // Overlay click
+            document.getElementById('overlay').addEventListener('click', function() {
+                document.getElementById('dayDetails').classList.remove('active');
+                this.classList.remove('active');
+            });
+            
+            // Subscribe button
+            document.getElementById('subscribeBtn').addEventListener('click', function() {
+                const emailInput = document.getElementById('userEmail');
+                const message = document.getElementById('subscriptionMessage');
+                
+                if (validateEmail(emailInput.value)) {
+                    // Update email count
+                    const emailCount = document.getElementById('emailCount');
+                    emailCount.textContent = parseInt(emailCount.textContent) + 1;
+                    
+                    // Show success message
+                    message.textContent = 'Thank you for subscribing! Check your email for our guide.';
+                    message.style.color = 'var(--success)';
+                    message.style.display = 'block';
+                    
+                    // Clear input
+                    emailInput.value = '';
+                    
+                    // Hide message after 5 seconds
+                    setTimeout(() => {
+                        message.style.display = 'none';
+                    }, 5000);
+                } else {
+                    message.textContent = 'Please enter a valid email address.';
+                    message.style.color = 'var(--primary)';
+                    message.style.display = 'block';
+                }
+            });
+        }
+        
+        function initAnalytics() {
             // Update visitor stats periodically for demo
             setInterval(() => {
-                const visitorCount = document.querySelector('.visitor-card:first-child .count');
-                const emailCount = document.querySelector('.visitor-card:nth-child(2) .count');
+                const visitorCount = document.getElementById('visitorCount');
+                const emailCount = document.getElementById('emailCount');
+                const countryCount = document.getElementById('countryCount');
                 
+                // Update visitor count
                 visitorCount.textContent = (parseInt(visitorCount.textContent.replace(/,/g, '')) + Math.floor(Math.random() * 3)).toLocaleString();
-                emailCount.textContent = (parseInt(emailCount.textContent) + Math.floor(Math.random() * 2));
+                
+                // Update country count occasionally
+                if (Math.random() > 0.8) {
+                    countryCount.textContent = parseInt(countryCount.textContent) + 1;
+                }
             }, 5000);
-        });
+        }
+        
+        function validateEmail(email) {
+            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(email);
+        }
     </script>
 </body>
 </html>
